@@ -17,6 +17,7 @@
 		<commons.codec.version>1.15</commons.codec.version>
 		<jackson.version>2.13.3</jackson.version>
 		<guava.version>15.0</guava.version>
+		<bcpkix-fips.version>2.1.10</bcpkix-fips.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -29,11 +30,11 @@
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcpkix-jdk15on</artifactId>
 			<version>${bc.version}</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
@@ -48,6 +49,11 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcpkix-fips</artifactId>
+		    <version>${bcpkix-fips.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

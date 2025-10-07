@@ -13,6 +13,7 @@ public class EncryptionUtils {
 	public static final String PUBLIC_KEY_NAME = "id_rsa.pub";
 	public static final String PRIVATE_KEY_NAME = "id_rsa";
 	public static final String DEFAULT_ALGORITHM = "RSA";
+	public static final String DEFAULT_FIPS_PROVIDER = "BCFIPS";
 	public static final String DEFAULT_HOME = ".encryption_keys";
 
 	public static String toHex(byte[] array) {

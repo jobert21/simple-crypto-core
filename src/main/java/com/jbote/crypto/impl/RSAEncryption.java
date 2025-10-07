@@ -4,6 +4,7 @@ import static com.jbote.crypto.utils.EncryptionUtils.DEFAULT_ALGORITHM;
 import static com.jbote.crypto.utils.EncryptionUtils.DEFAULT_HOME;
 import static com.jbote.crypto.utils.EncryptionUtils.PRIVATE_KEY_NAME;
 import static com.jbote.crypto.utils.EncryptionUtils.PUBLIC_KEY_NAME;
+import static com.jbote.crypto.utils.EncryptionUtils.DEFAULT_FIPS_PROVIDER;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
@@ -27,7 +28,7 @@ import java.util.UUID;
 import javax.crypto.Cipher;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 import org.bouncycastle.openssl.PEMDecryptorProvider;
 import org.bouncycastle.openssl.PEMEncryptedKeyPair;
 import org.bouncycastle.openssl.PEMParser;
@@ -66,7 +67,7 @@ public class RSAEncryption implements IEncryption, IEncryptionKey {
 	}
 
 	public RSAEncryption(Path encryptHome) {
-		Security.addProvider(new BouncyCastleProvider());
+		Security.addProvider(new BouncyCastleFipsProvider());
 		this.encryptHome = encryptHome != null ? encryptHome : Paths.get(System.getProperty("user.home"), DEFAULT_HOME);
 		log.debug("Loading RSA keys from {}.", this.encryptHome);
 		if (!Files.exists(this.encryptHome)) {
@@ -97,7 +98,7 @@ public class RSAEncryption implements IEncryption, IEncryptionKey {
 			Path privKey = encryptHome.resolve(PRIVATE_KEY_NAME);
 			if (!Files.exists(pubKey) || !Files.exists(privKey)) {
 				log.info("RSA keys does not exist. Create and save to {}.", encryptHome);
-				KeyPairGenerator kpg = KeyPairGenerator.getInstance(algorithm, "BC");
+				KeyPairGenerator kpg = KeyPairGenerator.getInstance(algorithm, DEFAULT_FIPS_PROVIDER);
 				kpg.initialize(4096);
 
 				KeyPair kp = kpg.genKeyPair();
@@ -129,7 +130,7 @@ public class RSAEncryption implements IEncryption, IEncryptionKey {
 		JceOpenSSLPKCS8EncryptorBuilder encryptorBuilder = new JceOpenSSLPKCS8EncryptorBuilder(
 				PKCS8Generator.PBE_SHA1_3DES);
 		encryptorBuilder.setRandom(new SecureRandom());
-		encryptorBuilder.setPasssword(password.toCharArray());
+		encryptorBuilder.setPassword(password.toCharArray());
 		OutputEncryptor oe = encryptorBuilder.build();
 		JcaPKCS8Generator gen = new JcaPKCS8Generator(privateKey, oe);
 		PemObject pemObject = gen.generate();
@@ -235,7 +236,7 @@ public class RSAEncryption implements IEncryption, IEncryptionKey {
 			try {
 				pemParser = new PEMParser(new FileReader(privPath.toFile()));
 				Object object = pemParser.readObject();
-				JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
+				JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BCFIPS");
 
 				PrivateKey privateKey = null;
 				if (object instanceof PKCS8EncryptedPrivateKeyInfo) {

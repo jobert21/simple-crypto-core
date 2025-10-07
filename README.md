@@ -5,7 +5,9 @@ This library provides a simple builder for encryption. The following are support
 - SHA3-512, PBKDF2WithHmacSHA512 for hashing
 - RSA
 
-TODO: support FIPS 140-3 for PGP encryption
+TODO: 
+- support FIPS 140-3
+- add PGP
 
 ### Using the builder class
 ```
