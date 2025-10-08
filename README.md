@@ -3,23 +3,40 @@
 This library provides a simple builder for encryption. The following are supported
 
 - SHA3-512, PBKDF2WithHmacSHA512 for hashing
-- RSA
+- RSA (FIPS 140-3)
+- PGP (FIPS 140-3)
 
-TODO: 
-- support FIPS 140-3
-- add PGP
-
-### Using the builder class
+### RSA
 ```
 	IEncryption rsa = CryptoBuilder
 				.rsa()
-				.setKeysHome(encryptHome)
+				.setKeysHomeDirectory(encryptHome)
 				.setPassword("12345")
 				.build();
 	byte[] encrypted = rsa.encrypt("hello".getBytes());//not base64 encoded.
 	byte[] decrypted = rsa.decrypt(encrypted);
 ```
-
+### PGP
+```
+	IEncryptionIO pgp = CryptoBuilder
+				.pgp()
+				.setKeyPassphrase("1234")// required if generating keys.
+				.setKeysHomeDirectory(keysHome)// the directory of the pgp keys
+				.setKeyPrefix("hello") // use the prefix to generate the keys. e.g. "hello_public.pgp", "hello_private.pgp". if not specified, "public.pgp", "private.pgp"
+				.generateKeys() // will generate keys. will be written in keys home directory.
+				.build();
+	Path clearPath = Paths.get("/path/to/file.txt");
+	Path encryptedPath = Paths.get("/path/to/file.txt.encrypted");
+	//encrypt
+	try (OutputStream out = Files.newOutputStream(encryptedPath)) {
+		pgp.encrypt(clearPath, out);
+	}
+	//decrypt
+	Patch decryptPath = Paths.get("/path/to/file.decrypted.txt");
+	try (OutputStream out = Files.newOutputStream(decryptPath)) {
+		pgp.decrypt(encryptedPath, out, "1234");
+	}
+```
 ### To use the password hash
 ```
 	IPasswordHash sha3 = CryptoBuilder

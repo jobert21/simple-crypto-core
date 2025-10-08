@@ -18,6 +18,7 @@
 		<jackson.version>2.13.3</jackson.version>
 		<guava.version>15.0</guava.version>
 		<bcpkix-fips.version>2.1.10</bcpkix-fips.version>
+		<bcpg-fips.version>2.1.10</bcpg-fips.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -54,6 +55,11 @@
 		    <groupId>org.bouncycastle</groupId>
 		    <artifactId>bcpkix-fips</artifactId>
 		    <version>${bcpkix-fips.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcpg-fips</artifactId>
+		    <version>${bcpg-fips.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

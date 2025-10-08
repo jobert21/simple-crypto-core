@@ -24,7 +24,7 @@ public class RSATest {
 		
 		rsa = CryptoBuilder
 				.rsa()
-				.setKeysHome(encryptHome)
+				.setKeysHomeDirectory(encryptHome)
 				.setPassword("12345")
 				.build();
 		

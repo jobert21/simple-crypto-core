@@ -1,10 +1,10 @@
 package com.jbote.crypto.impl;
 
 import static com.jbote.crypto.utils.EncryptionUtils.DEFAULT_ALGORITHM;
+import static com.jbote.crypto.utils.EncryptionUtils.DEFAULT_FIPS_PROVIDER;
 import static com.jbote.crypto.utils.EncryptionUtils.DEFAULT_HOME;
 import static com.jbote.crypto.utils.EncryptionUtils.PRIVATE_KEY_NAME;
 import static com.jbote.crypto.utils.EncryptionUtils.PUBLIC_KEY_NAME;
-import static com.jbote.crypto.utils.EncryptionUtils.DEFAULT_FIPS_PROVIDER;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
@@ -21,14 +21,12 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.Security;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.UUID;
 
 import javax.crypto.Cipher;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
-import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 import org.bouncycastle.openssl.PEMDecryptorProvider;
 import org.bouncycastle.openssl.PEMEncryptedKeyPair;
 import org.bouncycastle.openssl.PEMParser;
@@ -67,7 +65,6 @@ public class RSAEncryption implements IEncryption, IEncryptionKey {
 	}
 
 	public RSAEncryption(Path encryptHome) {
-		Security.addProvider(new BouncyCastleFipsProvider());
 		this.encryptHome = encryptHome != null ? encryptHome : Paths.get(System.getProperty("user.home"), DEFAULT_HOME);
 		log.debug("Loading RSA keys from {}.", this.encryptHome);
 		if (!Files.exists(this.encryptHome)) {

@@ -4,9 +4,13 @@
 package com.jbote.crypto;
 
 import java.nio.file.Path;
+import java.security.Security;
 import java.util.Objects;
 
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
+
 import com.jbote.crypto.impl.PBKDF2PasswordHash;
+import com.jbote.crypto.impl.PGPEncryption;
 import com.jbote.crypto.impl.RSAEncryption;
 import com.jbote.crypto.impl.Sha3PasswordHash;
 import com.jbote.crypto.utils.EncryptionUtils;
@@ -26,6 +30,55 @@ public class CryptoBuilder {
 
 	public static Sha3PasswordHashBuilder sha3Hash() {
 		return new Sha3PasswordHashBuilder();
+	}
+	
+	public static PGPBuilder pgp() {
+		return new PGPBuilder();
+	}
+
+	public static class PGPBuilder {
+		private Path keysHomeDirectory;
+		private String keyPrefix;
+		private boolean generateKeys;
+		private String keyPassphrase;
+
+		public PGPBuilder() {
+
+		}
+
+		public PGPBuilder setKeysHomeDirectory(Path keysHomeDirectory) {
+			this.keysHomeDirectory = keysHomeDirectory;
+			return this;
+		}
+
+		public PGPBuilder setKeyPrefix(String keyPrefix) {
+			this.keyPrefix = keyPrefix;
+			return this;
+		}
+
+		public PGPBuilder generateKeys() {
+			this.generateKeys = true;
+			return this;
+		}
+
+		public PGPBuilder setKeyPassphrase(String keyPassphrase) {
+			this.keyPassphrase = keyPassphrase;
+			return this;
+		}
+
+		public IEncryptionIO build() {
+			if (keysHomeDirectory == null) {
+				throw new RuntimeException("Must specify the keys directory.");
+			}
+			if (generateKeys) {
+				if (keyPassphrase == null || keyPassphrase.trim().isEmpty()) {
+					throw new RuntimeException("Key passphrase is required to generate keys.");
+				}
+			}
+			Security.addProvider(new BouncyCastleFipsProvider());
+			PGPEncryption pgp = new PGPEncryption(keysHomeDirectory, keyPrefix, generateKeys, keyPassphrase);
+			return pgp;
+		}
 	}
 
 	public static class PBKDF2PasswordHashBuilder {
@@ -54,7 +107,7 @@ public class CryptoBuilder {
 
 	public static class RSABuilder {
 		private String password;
-		private Path keysHome;
+		private Path keysHomeDirectory;
 
 		public String getPassword() {
 			return password;
@@ -65,18 +118,15 @@ public class CryptoBuilder {
 			return this;
 		}
 
-		public Path getKeysHome() {
-			return keysHome;
-		}
-
-		public RSABuilder setKeysHome(Path keysHome) {
-			this.keysHome = keysHome;
+		public RSABuilder setKeysHomeDirectory(Path keysHomeDirectory) {
+			this.keysHomeDirectory = keysHomeDirectory;
 			return this;
 		}
 
 		public IEncryption build() {
+			Security.addProvider(new BouncyCastleFipsProvider());
 			Objects.requireNonNull(password, "RSA password is required.");
-			RSAEncryption rsaEnc = new RSAEncryption(keysHome);
+			RSAEncryption rsaEnc = new RSAEncryption(keysHomeDirectory);
 			rsaEnc.generateKeys(EncryptionUtils.DEFAULT_ALGORITHM, password);
 			return rsaEnc;
 		}
