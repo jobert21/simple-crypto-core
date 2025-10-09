@@ -26,11 +26,9 @@ jobs:
           cache: maven
           server-id: github
           server-username: ${{ github.actor }}
-          server-password: ${{ secrets.MAVEN_PASSWORD }}
+          server-password: ${{ secrets.GITHUB_TOKEN }}
           settings-path: ${{ github.workspace }}/.m2
 
-      - name: Build with Maven
-        run: mvn clean install
         
       - name: Deploy to GitHub Packages
         run: mvn -B deploy -s ${{ github.workspace }}/.m2/settings.xml
