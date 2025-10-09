@@ -25,16 +25,15 @@ jobs:
           distribution: 'temurin'
           cache: maven
           server-id: github
+          server-username: ${{ github.actor }}
+          server-password: ${{ secrets.MAVEN_PASSWORD }}
           settings-path: ${{ github.workspace }}/.m2
 
       - name: Build with Maven
         run: mvn clean install
         
       - name: Deploy to GitHub Packages
-        run: mvn deploy
-        env:
-          MAVEN_USERNAME: ${{ github.repository_owner }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+        run: mvn -B deploy -s ${{ github.workspace }}/.m2/settings.xml
 
       # Only run dependency submission on pushes to avoid read-only GITHUB_TOKEN on fork PRs
       - name: Update dependency graph

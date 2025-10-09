@@ -80,6 +80,11 @@
 	        <name>GitHub Packages</name>
 	        <url>https://maven.pkg.github.com/jobert21/simple-crypto-core</url>
 	    </repository>
+	    <snapshotRepository>
+		    <id>github-snapshots</id>
+		    <name>GitHub Snapshots</name>
+		    <url>https://maven.pkg.github.com/jobert21/simple-crypto-core</url>
+		  </snapshotRepository>
 	</distributionManagement>
 	<build>
 		<resources>
