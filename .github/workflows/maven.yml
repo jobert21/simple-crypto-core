@@ -31,7 +31,7 @@ jobs:
 
         
       - name: Deploy to GitHub Packages
-        run: mvn -B deploy -s ${{ github.workspace }}/.m2/settings.xml
+        run: cat ${{ github.workspace }}/.m2/settings.xml && mvn -B deploy -s ${{ github.workspace }}/.m2/settings.xml
 
       # Only run dependency submission on pushes to avoid read-only GITHUB_TOKEN on fork PRs
       - name: Update dependency graph
