@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.jbote</groupId>
 	<artifactId>simple-crypto-core</artifactId>
-	<version>0.1</version>
+	<version>0.1.1</version>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -13,7 +13,7 @@
 		<resource.dir>src/main/resources</resource.dir>
 		<output.name>${project.artifactId}-${project.version}</output.name>
 		<bc.version>1.51</bc.version>
-		<commons.io.version>2.1</commons.io.version>
+		<commons.io.version>2.20.0</commons.io.version>
 		<commons.codec.version>1.15</commons.codec.version>
 		<jackson.version>2.13.3</jackson.version>
 		<guava.version>15.0</guava.version>
@@ -31,11 +31,6 @@
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
 		</dependency>
-		<!--<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcpkix-jdk15on</artifactId>
-			<version>${bc.version}</version>
-		</dependency>-->
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
