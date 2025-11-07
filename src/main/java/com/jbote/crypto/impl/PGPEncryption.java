@@ -3,8 +3,8 @@
  */
 package com.jbote.crypto.impl;
 
-import static com.jbote.crypto.utils.EncryptionUtils.DEFAULT_FIPS_PROVIDER;
 import static com.jbote.crypto.utils.EncryptionUtils.DEFAULT_ALGORITHM;
+import static com.jbote.crypto.utils.EncryptionUtils.DEFAULT_FIPS_PROVIDER;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,21 +50,36 @@ public class PGPEncryption implements IEncryptionIO {
 
 	@Override
 	public void encrypt(Path path, OutputStream out) throws Exception {
+		log.debug("Encrypt {}.", path);
+		try (InputStream in = Files.newInputStream(path)) {
+			encrypt(in, out);
+		}
+	}
+	
+	@Override
+	public void encrypt(InputStream in, OutputStream out) throws Exception {
 		PGPEncryptedDataGenerator encGen = new PGPEncryptedDataGenerator(
 				new JcePGPDataEncryptorBuilder(SymmetricKeyAlgorithmTags.AES_256).setWithIntegrityPacket(true)
 						.setProvider(DEFAULT_FIPS_PROVIDER));
 		PGPPublicKey encKey = encryptionKey.getPublicKey();
 		encGen.addMethod(new JcePublicKeyKeyEncryptionMethodGenerator(encKey).setProvider(DEFAULT_FIPS_PROVIDER));
-		try (OutputStream encOut = encGen.open(out, Files.size(path)); InputStream in = Files.newInputStream(path)) {
+		try (OutputStream encOut = encGen.open(out, new byte[1 << 16])) {
 			IOUtils.copy(in, encOut);
 		}
-		log.info("{} encrypted.", path);
 	}
 
 	@Override
 	public void decrypt(Path path, OutputStream out, String passphrase) throws Exception {
+		log.debug("Decrypt {}.", path);
+		try (InputStream in = Files.newInputStream(path)) {
+			decrypt(in, out, passphrase);
+		}
+	}
+
+	@Override
+	public void decrypt(InputStream encryptedIn, OutputStream out, String passphrase) throws Exception {
 		try (InputStream keyIn = PGPUtil.getDecoderStream(Files.newInputStream(encryptionKey.getPrivateKeyPath()));
-				InputStream in = PGPUtil.getDecoderStream(Files.newInputStream(path))) {
+				InputStream in = PGPUtil.getDecoderStream(encryptedIn)) {
 
 			PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(keyIn,
 					new JcaKeyFingerprintCalculator());
@@ -95,7 +110,6 @@ public class PGPEncryption implements IEncryptionIO {
 					new JcePublicKeyDataDecryptorFactoryBuilder().setProvider(DEFAULT_FIPS_PROVIDER).build(sKey))) {
 				IOUtils.copy(clear, out);
 			}
-			log.info("{} decrypted.", path);
 		}
 	}
 

@@ -3,15 +3,17 @@
  */
 package com.jbote.crypto;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.UUID;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -39,15 +41,27 @@ public class PGPEncryptionTest {
 		} else {
 			clearDir(keysHome);
 		}
-		InputStream in = PGPEncryptionTest.class.getResourceAsStream("/test.txt");
+//		InputStream in = PGPEncryptionTest.class.getResourceAsStream("/test.txt");
 		testFile = keysHome.resolve("test.txt");
-		Files.copy(in, testFile);
+		prepareBigFile(testFile);
+		
+//		Files.copy(in, testFile);
 		pgp = CryptoBuilder
 				.pgp()
 				.setKeyPassphrase(testPassphrase = "1234")
 				.setKeysHomeDirectory(keysHome)
 				.generateKeys()
 				.build();
+	}
+	
+	private static void prepareBigFile(Path testFile) throws Exception {
+		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(testFile)))) {
+			String uuid = UUID.randomUUID().toString();
+			String value = String.format("%s__%s", uuid, uuid);
+			for (int i = 0; i < 10000; i++) {
+				writer.write(value, 0, value.length());
+			}
+		}
 	}
 
 	@AfterClass
